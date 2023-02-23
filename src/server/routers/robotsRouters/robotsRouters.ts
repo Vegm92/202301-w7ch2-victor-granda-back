@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-  createRobot,
-  deleteRobotById,
-  getRobotById,
   getRobots,
-} from "../controllers/robotsControllers.js";
-import auth from "../middlewares/auth.js";
+  getRobotById,
+  deleteRobotById,
+  createRobot,
+} from "../../controllers/robotsControllers";
+import auth from "../../middlewares/auth";
 
 export const robotsRouter = Router();
 
