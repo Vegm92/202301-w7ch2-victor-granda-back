@@ -54,7 +54,7 @@ export const createUser = async (
     const saltNumber = 10;
 
     const hashedPassword = await bcryptjs.hash(password, saltNumber);
-    const avatar = req.file;
+    const avatar = req.file?.originalname;
 
     const user = await User.create({
       username,
@@ -63,10 +63,10 @@ export const createUser = async (
       email,
     });
 
-    res.status(201).json({ user });
+    res.status(201).json({ message: "New user created" });
   } catch (error) {
     const customError = new CustomError(
-      (error as Error).message,
+      "There was a problem registering the new user",
       500,
       "Error creating new user"
     );
