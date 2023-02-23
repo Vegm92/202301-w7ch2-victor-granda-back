@@ -3,9 +3,10 @@ import { type NextFunction, type Request, type Response } from "express";
 import { CustomError } from "../../CustomError/CustomError.js";
 import User from "../../database/models/User.js";
 import { type UserCredentials } from "../../types";
+import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const loginUser = async (
+export const loginUser = async (
   req: Request<
     Record<string, unknown>,
     Record<string, unknown>,
@@ -39,4 +40,37 @@ const loginUser = async (
   res.status(200).json({ token });
 };
 
-export default loginUser;
+export const createUser = async (
+  req: Request<
+    Record<string, unknown>,
+    Record<string, unknown>,
+    UserCredentials
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username, password, email } = req.body;
+    const saltNumber = 10;
+
+    const hashedPassword = await bcryptjs.hash(password, saltNumber);
+    const avatar = req.file;
+
+    const user = await User.create({
+      username,
+      password: hashedPassword,
+      avatar,
+      email,
+    });
+
+    res.status(201).json({ user });
+  } catch (error) {
+    const customError = new CustomError(
+      (error as Error).message,
+      500,
+      "Error creating new user"
+    );
+
+    next(customError);
+  }
+};
